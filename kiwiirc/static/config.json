@@ -1,19 +1,22 @@
 {
-	"windowTitle": "Kiwi IRC - The web IRC client",
+	"windowTitle": "irc.darwin.network",
 	"startupScreen": "welcome",
-	"kiwiServer": "https://localdev.clients.kiwiirc.com/webirc/kiwiirc/",
+	"kiwiServer": "https://irc.darwin.network/webirc/kiwiirc/",
 	"restricted": true,
-	"theme": "default",
+	"theme": "Dark",
 	"themes": [
-		{ "name": "Default", "url": "static/themes/default" }
+		{ "name": "Default", "url": "static/themes/default" },
+		{ "name": "Dark", "url": "static/themes/dark" }
 	],
 	"startupOptions" : {
-		"server": "irc.freenode.net",
-		"port": 6667,
-		"tls": false,
+		"server": "irc.darwin.network",
+		"port": 6697,
+		"tls": true,
 		"direct": false,
-		"channel": "#kiwiirc",
-		"nick": "kiwi-n?"
+		"channel": "#darwin",
+		"showPassword": false,
+		"password": "smellyoulater",
+		"greetingText": "irc.darwin.network"
 	},
 	"embedly": {
 		"key": ""
