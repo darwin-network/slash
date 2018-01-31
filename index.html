@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8" />
-<title>irc.darwin.network</title>
-</head>
-<body>
-
-<pre>
-host:         irc.darwin.network
-port:         6697
-ssl:          true
-password:     smellyoulater
-main channel: #darwin
-see also:     <a href="https://github.com/oragono/oragono">oragono</a>
-
-if you are looking for any of:
-
-irc.skub.club
-irc.xelpers.org
-<a href="jlatt-darwin.jpg">irc.jlatt.com</a>
-
-you are in the right place :-)
-</pre>
-
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>darwin.network</title>
+        <link rel="stylesheet" href="reset.css">
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <div id="first-page">
+            <div class="two-panes body">
+                <p>
+                    We are a community of programmers and nerds, mostly ex-Yelp
+                    employees.
+                </p><p>
+                    To connect directly to our IRC server (the ircd is <a
+                    href="https://github.com/oragono/oragono">oragono</a>),
+                    use:
+                </p><table id="irc-details">
+                    <tr>
+                        <td>Host</td><td>irc.darwin.network</td>
+                    </tr><tr>
+                        <td>Port</td><td>6697</td>
+                    </tr><tr>
+                        <td>SSL</td><td>true</td>
+                    </tr><tr>
+                        <td>Password</td><td>smellyoulater</td>
+                    </tr><tr>
+                        <td>Channel</td><td>#darwin</td>
+                    </tr>
+                </table><p>
+                    Or use the web client below.
+                </p>
+            </div><div class="two-panes">
+                <img src="/jlatt-darwin.jpg">
+            </div>
+        </div>
+        <iframe id="irc" src="/kiwiirc"></iframe>
+    </body>
 </html>
