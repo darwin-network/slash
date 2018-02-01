@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+if [[ $EUID -ne 0 || -z $SUDO_USER ]]; then
+	echo "run this with sudo"
+	exit 1
+fi
+
+BACKUP_FILE=backup-$(date -I).tar.gz
+ENCRYPTED_BACKUP_FILE=${BACKUP_FILE}.gpg
+
+tar -cvzf $BACKUP_FILE /etc /var/www /home/oragono/go/bin/oragono /home/oragono/ircd.* /home/oragono/go/bin/webircgateway /home/oragono/webircgateway.*
+gpg --symmetric --cipher-algo AES256 --passphrase-file /etc/backup_passphrase --no-use-agent --output $ENCRYPTED_BACKUP_FILE $BACKUP_FILE
+rm $BACKUP_FILE
+chown ${SUDO_USER}:${SUDO_USER} $ENCRYPTED_BACKUP_FILE
+echo successfully backed up as $ENCRYPTED_BACKUP_FILE

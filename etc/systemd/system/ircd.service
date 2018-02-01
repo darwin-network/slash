@@ -1,0 +1,14 @@
+[Unit]
+Description=ircd
+After=network.target
+
+[Service]
+Type=simple
+User=oragono
+WorkingDirectory=/home/oragono
+ExecStart=/home/oragono/go/bin/oragono run --conf /home/oragono/ircd.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# install this in /etc/cron.daily
+# for bonus points, set /etc/crontab to run all daily jobs at a time when
+# people will be around to fix things. early afternoon seems good.
+
+systemctl reload nginx.service
+systemctl reload stunnel4.service
+exit 0
