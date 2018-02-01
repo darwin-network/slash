@@ -1,0 +1,22 @@
+{
+        "windowTitle": "irc.darwin.network",
+        "startupScreen": "welcome",
+        "kiwiServer": "https://irc.darwin.network/webirc/kiwiirc/",
+        "restricted": true,
+        "theme": "dark",
+        "themes": [
+                { "name": "Default", "url": "static/themes/default" },
+                { "name": "Dark", "url": "static/themes/dark" }
+        ],
+        "startupOptions" : {
+                "greetingText": "irc.darwin.network",
+                "direct": false,
+                "password": "smellyoulater",
+                "showPassword": false,
+                "channel": "#darwin",
+                "nick": "guest-n?"
+        },
+        "embedly": {
+                "key": ""
+        }
+}
