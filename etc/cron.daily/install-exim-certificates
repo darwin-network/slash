@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# debian's exim package doesn't have setuid for reading TLS certificates,
+# so copy the certificate for its use once per day.
+# install this in /etc/cron.daily
+
+set -eu
+
+DOMAIN=irc.darwin.network
+
+EXIM_USER=Debian-exim
+EXIM_GROUP=nogroup
+
+BASEDIR=/etc/eximkeys
+TARGET=${BASEDIR}/tls
+TEMPSYM=${BASEDIR}/tlssym
+WORKDIR=${BASEDIR}/tlstmp_$(uuidgen)
+OLD_WORKDIR=$(ls -d ${BASEDIR}/tlstmp_*)
+
+[[ -n "$OLD_WORKDIR" ]]
+
+# world-readable directory:
+mkdir $WORKDIR
+# containing 0600 files:
+umask 077
+cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ${WORKDIR}/fullchain.pem
+cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem ${WORKDIR}/privkey.pem
+chown $EXIM_USER:$EXIM_GROUP ${WORKDIR}/*.pem
+# create a symlink pointing to the new temporary directory:
+ln -sfT $WORKDIR $TEMPSYM
+# use rename(2) to atomically change the production symlink $TARGET:
+mv -fT $TEMPSYM $TARGET
+# clean up yesterday's temporary directory:
+rm -r $OLD_WORKDIR
+
+# TODO is this necessary?
+systemctl restart exim4.service
+
+exit 0
