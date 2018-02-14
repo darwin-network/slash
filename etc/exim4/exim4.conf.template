@@ -1,3 +1,12 @@
+MAIN_TLS_ENABLE = true
+MAIN_TLS_CERTIFICATE = /etc/eximkeys/tls/fullchain.pem
+MAIN_TLS_PRIVATEKEY = /etc/eximkeys/tls/privkey.pem
+
+DKIM_CANON = relaxed
+DKIM_SELECTOR = 201802
+DKIM_DOMAIN = darwin.network
+DKIM_PRIVATE_KEY = /etc/eximkeys/dkim/1024/darwin.network-private.pem
+
 #####################################################
 ### main/01_exim4-config_listmacrosdefs
 #####################################################
@@ -1620,6 +1629,9 @@ procmail_pipe:
 remote_smtp:
   debug_print = "T: remote_smtp for $local_part@$domain"
   driver = smtp
+  hosts_require_tls = *
+  tls_tempfail_tryclear = false
+  tls_verify_certificates = /etc/ssl/certs
 .ifdef REMOTE_SMTP_HOSTS_AVOID_TLS
   hosts_avoid_tls = REMOTE_SMTP_HOSTS_AVOID_TLS
 .endif
