@@ -11,27 +11,25 @@ DOMAIN=irc.darwin.network
 EXIM_USER=Debian-exim
 EXIM_GROUP=nogroup
 
-BASEDIR=/etc/eximkeys
-TARGET=${BASEDIR}/tls
-TEMPSYM=${BASEDIR}/tlssym
-WORKDIR=${BASEDIR}/tlstmp_$(uuidgen)
-OLD_WORKDIR=$(ls -d ${BASEDIR}/tlstmp_*)
-
-[[ -n "$OLD_WORKDIR" ]]
+BASEDIR=/etc/eximkeys/tls
+CHAIN=${BASEDIR}/fullchain.pem
+PRIVKEY=${BASEDIR}/privkey.pem
+CHAINTMP=${BASEDIR}/$(uuidgen)
+PRIVKEYTMP=${BASEDIR}/$(uuidgen)
 
 # world-readable directory:
-mkdir $WORKDIR
+mkdir -p /etc/eximkeys/tls
 # containing 0600 files:
 umask 077
-cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ${WORKDIR}/fullchain.pem
-cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem ${WORKDIR}/privkey.pem
-chown $EXIM_USER:$EXIM_GROUP ${WORKDIR}/*.pem
-# create a symlink pointing to the new temporary directory:
-ln -sfT $WORKDIR $TEMPSYM
-# use rename(2) to atomically change the production symlink $TARGET:
-mv -fT $TEMPSYM $TARGET
-# clean up yesterday's temporary directory:
-rm -r $OLD_WORKDIR
+cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem $CHAINTMP
+cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem $PRIVKEYTMP
+chown $EXIM_USER:$EXIM_GROUP $CHAINTMP $PRIVKEYTMP
+# atomicity isn't really possible here; as long as the server ends up doing
+# two separate open(2) calls to read the certificate and the private key,
+# it is possible for it to see a mismatched cert and key. this is probably why
+# LE doesn't seem to care about this. dealwithit.gif
+mv $CHAINTMP $CHAIN
+mv $PRIVKEYTMP $PRIVKEY
 
 # TODO is this necessary?
 systemctl restart exim4.service
