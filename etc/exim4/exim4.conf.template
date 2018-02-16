@@ -1384,6 +1384,20 @@ lowuid_aliases:
 #####################################################
 
 #####################################################
+### router/darwinforwards
+#####################################################
+
+darwinforwards:
+  debug_print = "R: darwinforward for $local_part@$domain"
+  driver = redirect
+  data = ${lookup{$sender_address}lsearch{/etc/exim4/darwinforwards}}
+  cannot_route_message = Unknown user
+
+#####################################################
+### end router/darwinforwards
+#####################################################
+
+#####################################################
 ### router/mmm_mail4root
 #####################################################
 
