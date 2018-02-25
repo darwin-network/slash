@@ -1,6 +1,9 @@
 MAIN_TLS_ENABLE = true
 MAIN_TLS_CERTIFICATE = /etc/eximkeys/tls/fullchain.pem
 MAIN_TLS_PRIVATEKEY = /etc/eximkeys/tls/privkey.pem
+# don't advertise TLS to local relay clients, because the TLS certs
+# are only valid for the actual domain names, not 'localhost'
+MAIN_TLS_ADVERTISE_HOSTS = !localhost : *
 
 DKIM_CANON = relaxed
 DKIM_SELECTOR = 201802
