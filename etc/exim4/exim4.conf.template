@@ -5,6 +5,8 @@ MAIN_TLS_PRIVATEKEY = /etc/eximkeys/tls/privkey.pem
 # are only valid for the actual domain names, not 'localhost'
 MAIN_TLS_ADVERTISE_HOSTS = !localhost : *
 
+MAIN_HARDCODE_PRIMARY_HOSTNAME=darwin.network
+
 DKIM_CANON = relaxed
 DKIM_SELECTOR = 201802
 DKIM_DOMAIN = darwin.network
