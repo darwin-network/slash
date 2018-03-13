@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -eu
+
+/etc/bin/install-lecerts irc.darwin.network oragono nogroup /home/oragono/tls
+
+systemctl reload stunnel4.service
+
+exit 0

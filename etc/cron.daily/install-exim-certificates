@@ -1,35 +1,8 @@
 #!/bin/bash
 
-# debian's exim package doesn't have setuid for reading TLS certificates,
-# so copy the certificate for its use once per day.
-# install this in /etc/cron.daily
-
 set -eu
 
-DOMAIN=irc.darwin.network
-
-EXIM_USER=Debian-exim
-EXIM_GROUP=nogroup
-
-BASEDIR=/etc/eximkeys/tls
-CHAIN=${BASEDIR}/fullchain.pem
-PRIVKEY=${BASEDIR}/privkey.pem
-CHAINTMP=${BASEDIR}/$(uuidgen)
-PRIVKEYTMP=${BASEDIR}/$(uuidgen)
-
-# world-readable directory:
-mkdir -p /etc/eximkeys/tls
-# containing 0600 files:
-umask 077
-cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem $CHAINTMP
-cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem $PRIVKEYTMP
-chown $EXIM_USER:$EXIM_GROUP $CHAINTMP $PRIVKEYTMP
-# atomicity isn't really possible here; as long as the server ends up doing
-# two separate open(2) calls to read the certificate and the private key,
-# it is possible for it to see a mismatched cert and key. this is probably why
-# LE doesn't seem to care about this. dealwithit.gif
-mv $CHAINTMP $CHAIN
-mv $PRIVKEYTMP $PRIVKEY
+/etc/bin/install-lecerts irc.darwin.network Debian-exim nogroup /etc/eximkeys/tls
 
 # TODO is this necessary?
 systemctl restart exim4.service

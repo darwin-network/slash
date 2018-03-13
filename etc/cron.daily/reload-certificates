@@ -5,5 +5,4 @@
 # people will be around to fix things. early afternoon seems good.
 
 systemctl reload nginx.service
-systemctl reload stunnel4.service
 exit 0

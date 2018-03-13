@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# copy LE certs for the use of applications that don't have setuid support
+# usage:
+# install-lecerts irc.darwin.network Debian-exim nogroup /etc/eximkeys/tls
+
+set -eu
+
+DOMAIN=$1
+
+TARGET_USER=$2
+TARGET_GROUP=$3
+
+BASEDIR=$4
+
+CHAIN=${BASEDIR}/fullchain.pem
+PRIVKEY=${BASEDIR}/privkey.pem
+CHAINTMP=${BASEDIR}/$(uuidgen)
+PRIVKEYTMP=${BASEDIR}/$(uuidgen)
+
+# world-readable directory:
+mkdir -p "$BASEDIR"
+# containing 0600 files:
+umask 077
+cp "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" "$CHAINTMP"
+cp "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" "$PRIVKEYTMP"
+chown "$TARGET_USER:$TARGET_GROUP" "$CHAINTMP" "$PRIVKEYTMP"
+# atomicity isn't really possible here; as long as the server ends up doing
+# two separate open(2) calls to read the certificate and the private key,
+# it is possible for it to see a mismatched cert and key. this is probably why
+# LE doesn't seem to care about this. dealwithit.gif
+mv "$CHAINTMP" "$CHAIN"
+mv "$PRIVKEYTMP" "$PRIVKEY"
+
+exit 0
