@@ -31,7 +31,7 @@ server {
 
 	# webircgateway hardcodes the WS path to be /webirc/websocket
 	location /webirc {
-		proxy_pass http://127.0.0.2:6969/webirc;
+		proxy_pass http://unix:/tmp/webircgateway.sock:/webirc;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "Upgrade";
