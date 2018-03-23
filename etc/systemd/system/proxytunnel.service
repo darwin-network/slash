@@ -1,12 +1,12 @@
 [Unit]
-Description=ircd
+Description=stunnel proxy in front of the ircd
 After=network.target
 
 [Service]
 Type=simple
 User=oragono
 WorkingDirectory=/home/oragono
-ExecStart=/home/oragono/go/bin/oragono run --conf /home/oragono/ircd.yaml
+ExecStart=/usr/bin/stunnel4 /etc/stunnel/ircd.conf
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=1048576
