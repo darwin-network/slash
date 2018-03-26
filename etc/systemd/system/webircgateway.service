@@ -9,6 +9,7 @@ WorkingDirectory=/home/oragono
 ExecStart=/home/oragono/go/bin/webircgateway -config /home/oragono/webircgateway.conf
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
+LimitNOFILE=1048576
 
 [Install]
 WantedBy=multi-user.target
