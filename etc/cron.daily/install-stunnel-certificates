@@ -2,7 +2,8 @@
 
 set -eu
 
-/etc/bin/install-lecerts irc.darwin.network oragono nogroup /home/oragono/tls
+export LE_SOURCEDIR=/etc/certificates
+/etc/bin/install-lecerts irc.darwin.network stunnel4 stunnel4 /etc/stunnel_certificates
 
 systemctl reload proxytunnel.service
 

@@ -4,8 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=oragono
-WorkingDirectory=/home/oragono
+User=stunnel4
 ExecStart=/usr/bin/stunnel4 /etc/stunnel/ircd.conf
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure

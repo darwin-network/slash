@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=oragono
-WorkingDirectory=/home/oragono
-ExecStart=/home/oragono/go/bin/webircgateway -config /home/oragono/webircgateway.conf
+User=webircgateway
+WorkingDirectory=/home/webircgateway
+ExecStart=/home/webircgateway/go/bin/webircgateway -config /home/webircgateway/webircgateway.conf
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=1048576

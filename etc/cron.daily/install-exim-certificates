@@ -2,7 +2,8 @@
 
 set -eu
 
-/etc/bin/install-lecerts irc.darwin.network Debian-exim nogroup /etc/eximkeys/tls
+export LE_SOURCEDIR=/etc/certificates
+/etc/bin/install-lecerts irc.darwin.network Debian-exim Debian-exim /etc/exim_certificates/tls
 
 # TODO is this necessary?
 systemctl restart exim4.service

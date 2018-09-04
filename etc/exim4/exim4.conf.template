@@ -1,6 +1,6 @@
 MAIN_TLS_ENABLE = true
-MAIN_TLS_CERTIFICATE = /etc/eximkeys/tls/fullchain.pem
-MAIN_TLS_PRIVATEKEY = /etc/eximkeys/tls/privkey.pem
+MAIN_TLS_CERTIFICATE = /etc/exim_certificates/tls/fullchain.pem
+MAIN_TLS_PRIVATEKEY = /etc/exim_certificates/tls/privkey.pem
 # don't advertise TLS to local relay clients, because the TLS certs
 # are only valid for the actual domain names, not 'localhost'
 MAIN_TLS_ADVERTISE_HOSTS = !localhost : *
@@ -8,9 +8,9 @@ MAIN_TLS_ADVERTISE_HOSTS = !localhost : *
 MAIN_HARDCODE_PRIMARY_HOSTNAME=darwin.network
 
 DKIM_CANON = relaxed
-DKIM_SELECTOR = 201802
+DKIM_SELECTOR = 201808
 DKIM_DOMAIN = darwin.network
-DKIM_PRIVATE_KEY = /etc/eximkeys/dkim/1024/darwin.network-private.pem
+DKIM_PRIVATE_KEY = /etc/exim_certificates/dkim/201808/darwin.network-private.pem
 
 #####################################################
 ### main/01_exim4-config_listmacrosdefs
@@ -101,7 +101,8 @@ gecos_name = $1
 
 # These macros are documented in acl/30_exim4-config_check_rcpt,
 # can be changed here or overridden by a locally added configuration
-# file as described in README.Debian chapter 2.1.2
+# file as described in README.Debian section "Using Exim Macros to control
+# the configuration".
 
 .ifndef CHECK_RCPT_LOCAL_LOCALPARTS
 CHECK_RCPT_LOCAL_LOCALPARTS = ^[.] : ^.*[@%!/|`#&?]
@@ -187,7 +188,7 @@ message_size_limit = MESSAGE_SIZE_LIMIT
 # Allow Exim to recognize addresses of the form "user@[10.11.12.13]",
 # where the domain part is a "domain literal" (an IP address) instead
 # of a named domain. The RFCs require this facility, but it is disabled
-# in the default config since it is seldomly used and frequently abused.
+# in the default config since it is rarely used and frequently abused.
 # Domain literal support also needs a special router, which is automatically
 # enabled if you use the enable macro MAIN_ALLOW_DOMAIN_LITERALS.
 # Additionally, you might want to make your local IP addresses (or @[])
@@ -332,12 +333,12 @@ trusted_groups = MAIN_TRUSTED_GROUPS
 
 .ifdef MAIN_KEEP_ENVIRONMENT
 keep_environment = MAIN_KEEP_ENVIRONMENT
+.else
+# set option to empty value to avoid warning.
+keep_environment =
 .endif
 .ifdef MAIN_ADD_ENVIRONMENT
 add_environment = MAIN_ADD_ENVIRONMENT
-.elifndef MAIN_KEEP_ENVIRONMENT
-# set empty add_environment to avoid warning.
-add_environment = <; PATH=/bin:/usr/bin
 .endif
 #####################################################
 ### end main/02_exim4-config_options
@@ -422,6 +423,13 @@ tls_verify_hosts = MAIN_TLS_VERIFY_HOSTS
 tls_try_verify_hosts = MAIN_TLS_TRY_VERIFY_HOSTS
 .endif
 
+.ifdef _HAVE_GNUTLS
+tls_dhparam = historic
+.endif
+
+.else
+# Don't advertise TLS if MAIN_TLS_ENABLE is not set.
+tls_advertise_hosts =
 .endif
 #####################################################
 ### end main/03_exim4-config_tlsoptions
@@ -523,11 +531,6 @@ acl_local_deny_exceptions:
 # accepted or denied.
 #
 acl_check_mail:
-  .ifdef CHECK_MAIL_HELO_ISSUED
-  deny
-    message = no HELO given before MAIL command
-    condition = ${if def:sender_helo_name {no}{yes}}
-  .endif
 
   accept
 #####################################################
@@ -652,9 +655,10 @@ acl_check_rcpt:
   # to enable this feature.
   #
   # This feature does not work in smarthost and satellite setups as
-  # with these setups all domains pass verification. See spec.txt chapter
-  # 39.31 with the added information that a smarthost/satellite setup
-  # routes all non-local e-mail to the smarthost.
+  # with these setups all domains pass verification. See spec.txt section
+  # "Access control lists" subsection "Address verification" with the added
+  # information that a smarthost/satellite setup routes all non-local e-mail
+  # to the smarthost.
   .ifdef CHECK_RCPT_VERIFY_SENDER
   deny
     message = Sender verification failed
@@ -708,6 +712,10 @@ acl_check_rcpt:
     control = submission/sender_retain
     control = dkim_disable_verify
 
+  # Insist that a HELO/EHLO was accepted.
+
+  require message	= nice hosts say HELO first
+          condition	= ${if def:sender_helo_name}
 
   # Insist that any other recipient address that we accept is either in one of
   # our local domains, or is in a domain for which we explicitly allow
@@ -910,6 +918,15 @@ acl_check_rcpt:
 
 acl_check_data:
 
+  # Deny if the message contains an overlong line.  Per the standards
+  # we should never receive one such via SMTP.
+  #
+  .ifndef IGNORE_SMTP_LINE_LENGTH_LIMIT
+  deny    message    = maximum allowed line length is 998 octets, \
+                       got $max_received_linelength
+          condition  = ${if > {$max_received_linelength}{998}}
+  .endif
+
   # Deny unless the address list headers are syntactically correct.
   #
   # If you enable this, you might reject legitimate mail.
@@ -1004,7 +1021,7 @@ begin routers
 
 # This router handles e-mail addresses in "domain literal" form like
 # <user@[10.11.12.13]>. The RFCs require this facility, but it is disabled
-# in the default config since it is seldomly used and frequently abused.
+# in the default config since it is rarely used and frequently abused.
 # Domain literal support also needs to be enabled in the main config,
 # which is automatically done if you use the enable macro
 # MAIN_ALLOW_DOMAIN_LITERALS.
@@ -1226,7 +1243,7 @@ system_aliases:
 
 .ifdef DCconfig_satellite
 # This router is only used for configtype=satellite.
-# It takes care to route all mail targetted to <somelocaluser@this.machine>
+# It takes care to route all mail targeted to <somelocaluser@this.machine>
 # to the host where we read our mail
 #
 hub_user:
@@ -1624,13 +1641,21 @@ procmail_pipe:
 ### transport/30_exim4-config_remote_smtp
 #################################
 # This transport is used for delivering messages over SMTP connections.
+# Refuse to send any message with over-long lines, which could have
+# been received other than via SMTP. The use of message_size_limit to
+# enforce this is a red herring.
 
 remote_smtp:
   debug_print = "T: remote_smtp for $local_part@$domain"
   driver = smtp
+  # XXX begin TLS delivery enforcement
   hosts_require_tls = *
   tls_tempfail_tryclear = false
   tls_verify_certificates = /etc/ssl/certs
+  # XXX end TLS delivery enforcement
+.ifndef IGNORE_SMTP_LINE_LENGTH_LIMIT
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+.endif
 .ifdef REMOTE_SMTP_HOSTS_AVOID_TLS
   hosts_avoid_tls = REMOTE_SMTP_HOSTS_AVOID_TLS
 .endif
@@ -1683,10 +1708,16 @@ tls_privatekey = REMOTE_SMTP_PRIVATEKEY
 # This transport is used for delivering messages over SMTP connections
 # to a smarthost. The local host tries to authenticate.
 # This transport is used for smarthost and satellite configurations.
+# Refuse to send any messsage with over-long lines, which could have
+# been received other than via SMTP. The use of message_size_limit to
+# enforce this is a red herring.
 
 remote_smtp_smarthost:
   debug_print = "T: remote_smtp_smarthost for $local_part@$domain"
   driver = smtp
+.ifndef IGNORE_SMTP_LINE_LENGTH_LIMIT
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+.endif
   hosts_try_auth = <; ${if exists{CONFDIR/passwd.client} \
         {\
         ${lookup{$host}nwildlsearch{CONFDIR/passwd.client}{$host_address}}\
@@ -1695,6 +1726,9 @@ remote_smtp_smarthost:
       }
 .ifdef REMOTE_SMTP_SMARTHOST_HOSTS_AVOID_TLS
   hosts_avoid_tls = REMOTE_SMTP_SMARTHOST_HOSTS_AVOID_TLS
+.endif
+.ifdef REMOTE_SMTP_SMARTHOST_HOSTS_REQUIRE_TLS
+  hosts_require_tls = REMOTE_SMTP_SMARTHOST_HOSTS_REQUIRE_TLS
 .endif
 .ifdef REMOTE_SMTP_HEADERS_REWRITE
   headers_rewrite = REMOTE_SMTP_HEADERS_REWRITE
@@ -1795,7 +1829,7 @@ begin rewrite
 ### rewrite/31_exim4-config_rewriting
 #################################
 
-# This rewriting rule is particularily useful for dialup users who
+# This rewriting rule is particularly useful for dialup users who
 # don't have their own domain, but could be useful for anyone.
 # It looks up the real address of all local users in a file
 .ifndef NO_EAA_REWRITE_REWRITE
