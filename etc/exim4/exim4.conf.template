@@ -1438,6 +1438,11 @@ mail4root:
   local_parts = root
   user = mail
   group = mail
+  # don't deliver mail addressed to root if it's coming from a remote address;
+  # this avoids a DOS where a remote attacker tries to exhaust local disk
+  # https://www.exim.org/exim-html-current/doc/html/spec_html/ch-the_redirect_router.html
+  condition = ${if match {$sender_host_address}\
+                            {\N^(|127\.0\.0\.1)$\N}}
 
 #####################################################
 ### end router/mmm_mail4root
