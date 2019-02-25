@@ -15,7 +15,7 @@
 ## Tor opens a socks proxy on port 9050 by default -- even if you don't
 ## configure one below. Set "SocksPort 0" if you plan to run Tor only
 ## as a relay, and not make any local application connections yourself.
-#SocksPort 9050 # Default: Bind to localhost:9050 for local connections.
+SocksPort 0
 #SocksPort 192.168.0.1:9100 # Bind to this address:port too.
 
 ## Entry policies to allow/deny SOCKS requests based on IP address.
@@ -50,6 +50,7 @@
 ## The directory for keeping all the keys/etc. By default, we store
 ## things in $HOME/.tor on Unix, and in Application Data\tor on Windows.
 #DataDirectory /var/lib/tor
+CacheDirectory /var/lib/tor/cache
 
 ## The port on which Tor will listen for local connections from Tor
 ## controller applications, as documented in control-spec.txt.
@@ -68,8 +69,12 @@
 ## HiddenServicePort x y:z says to redirect requests on port x to the
 ## address y:z.
 
-#HiddenServiceDir /var/lib/tor/hidden_service/
-#HiddenServicePort 80 127.0.0.1:80
+HiddenServiceDir /var/lib/tor/tor_hidden_service
+HiddenServicePort 6667 unix:/hidden_service_sockets/oragono
+
+# single-hop mode since the location of darwin.network is not a secret
+HiddenServiceNonAnonymousMode 1
+HiddenServiceSingleHopMode 1
 
 #HiddenServiceDir /var/lib/tor/other_hidden_service/
 #HiddenServicePort 80 127.0.0.1:80
