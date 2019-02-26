@@ -1,0 +1,6 @@
+This is a directory to hold hidden service sockets that can be:
+
+1. Manipulated by unprivileged services
+1. Connected to by the heavily sandboxed debian tor daemon
+
+It should be 0777.
