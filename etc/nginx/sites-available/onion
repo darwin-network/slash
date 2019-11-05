@@ -6,10 +6,12 @@ server {
 	index index.html;
 	autoindex off;
 
-	# don't serve webirc here; the kiwi config hardcodes https://irc.darwin.network
-	# as the kiwi server, so webirc traffic will be forced over an exit node.
-	# this is probably the best we can do, since webircgateway doesn't support
-	# flagging connections as originating from an onion service the way oragono does.
+	# webirc will not work over an onion address for multiple reasons:
+	# 1. webircgateway doesn't support "tor listeners" the way oragono does
+	# 2. CORS headaches (TBB appears to suppress the Origin: header)
+	location /kiwi/ {
+		return 302 https://irc.darwin.network/kiwi/;
+	}
 
 	location / {
 		root /var/www/html;
