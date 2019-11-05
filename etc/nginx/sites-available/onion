@@ -1,0 +1,22 @@
+server {
+	listen 127.0.0.1:8080 default_server;
+
+	server_name v7k2huxf5b353zgo7zgoo5tapsf6lkarcykkn7qdgx3kwugw4syzihqd.onion;
+
+	index index.html;
+	autoindex off;
+
+	# webirc will not work over an onion address for multiple reasons:
+	# 1. webircgateway doesn't support "tor listeners" the way oragono does
+	# 2. CORS headaches (TBB appears to suppress the Origin: header)
+	location /kiwi/ {
+		return 302 https://irc.darwin.network/kiwi/;
+	}
+
+	location / {
+		root /var/www/html;
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+}

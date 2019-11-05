@@ -71,6 +71,7 @@ CacheDirectory /var/lib/tor/cache
 
 HiddenServiceDir /var/lib/tor/tor_hidden_service
 HiddenServicePort 6667 unix:/hidden_service_sockets/oragono
+HiddenServicePort 80 127.0.0.1:8080
 
 # single-hop mode since the location of darwin.network is not a secret
 HiddenServiceNonAnonymousMode 1
