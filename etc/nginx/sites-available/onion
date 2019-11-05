@@ -1,5 +1,5 @@
 server {
-	listen unix:/hidden_service_sockets/nginx default_server;
+	listen 127.0.0.1:8080 default_server;
 
 	server_name v7k2huxf5b353zgo7zgoo5tapsf6lkarcykkn7qdgx3kwugw4syzihqd.onion;
 
