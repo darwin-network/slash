@@ -6,6 +6,9 @@ server {
 	index index.html;
 	autoindex off;
 
+	# stop directory 301 URLs from explicitly including port 8080
+	port_in_redirect off;
+
 	# webirc will not work over an onion address for multiple reasons:
 	# 1. webircgateway doesn't support "tor listeners" the way oragono does
 	# 2. CORS headaches (TBB appears to suppress the Origin: header)
