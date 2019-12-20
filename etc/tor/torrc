@@ -77,6 +77,8 @@ HiddenServicePort 80 127.0.0.1:8080
 HiddenServiceNonAnonymousMode 1
 HiddenServiceSingleHopMode 1
 
+HiddenServiceEnableIntroDoSDefense 1
+
 #HiddenServiceDir /var/lib/tor/other_hidden_service/
 #HiddenServicePort 80 127.0.0.1:80
 #HiddenServicePort 22 127.0.0.1:22
