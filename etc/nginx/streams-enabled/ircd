@@ -1,6 +1,6 @@
 server {
-	listen 6698 ssl;
-	listen [::]:6698 ssl;
+	listen 6697 ssl;
+	listen [::]:6697 ssl;
 
 	ssl_certificate /etc/certificates/irc.darwin.network/fullchain.pem;
 	ssl_certificate_key /etc/certificates/irc.darwin.network/privkey.pem;
