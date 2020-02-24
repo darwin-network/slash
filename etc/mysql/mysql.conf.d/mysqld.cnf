@@ -58,8 +58,10 @@ innodb_flush_log_at_trx_commit = 0
 sync_binlog = 0
 innodb_flush_method = O_DIRECT
 
-# lol
-skip_name_resolve = on
+# TODO: figure out how to enable skip_name_resolve
+# i hardcoded 'localhost' into the user grant, so when i enable skip_name_resolve, i get:
+# "Error 1130: Host '127.0.0.1' is not allowed to connect to this MySQL server"
+# skip_name_resolve = on
 # END customizations
 
 #
