@@ -41,6 +41,27 @@ skip-external-locking
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
 bind-address		= 127.0.0.1
+
+# BEGIN customizations:
+# we'll need this on 8.0 but on 5.7 it just prevents the service from starting,
+# so comment it out for now:
+# see https://bugs.launchpad.net/ubuntu/+source/mysql-8.0/+bug/1857584
+# mysqlx_bind_address = 127.0.0.1
+
+# use innodb, obviously
+default_storage_engine = InnoDB
+# sane budget out of 2GB available
+innodb_buffer_pool_size = 512M
+
+# sacrifice durability for speed
+innodb_flush_log_at_trx_commit = 0
+sync_binlog = 0
+innodb_flush_method = O_DIRECT
+
+# lol
+skip_name_resolve = on
+# END customizations
+
 #
 # * Fine Tuning
 #
@@ -57,8 +78,15 @@ myisam-recover-options  = BACKUP
 #
 # * Query Cache Configuration
 #
-query_cache_limit	= 1M
-query_cache_size        = 16M
+
+# BEGIN customizations
+#query_cache_limit	= 1M
+#query_cache_size        = 16M
+# query cache is unnecessary in our setup
+query_cache_type = 0
+query_cache_size = 0
+# END customizations
+
 #
 # * Logging and Replication
 #
