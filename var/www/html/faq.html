@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>darwin.network FAQ</title>
+</head>
+
+<body>
+<pre>
+Account registration FAQ
+========================
+
+1. How do I register my nickname / account?
+
+Use this command, substituting your desired password and e-mail address:
+
+/msg NickServ register mySecretPassword validEmailAddress@example.com
+
+The server will dispatch a verification code and further instructions to
+your e-mail address. Ask in #darwin if you have problems.
+
+2. How do I authenticate to my nickname?
+
+You should enable SASL in your client. Freenode's guide covers many popular
+clients:
+
+<a href="https://freenode.net/kb/answer/sasl">https://freenode.net/kb/answer/sasl</a>
+
+If your client is not listed, it may have its own documentation or help pages.
+
+Note that many clients only support a single password field. In this case, you
+should configure your SASL password as the password and omit the server
+password (`smellyoulater`) entirely; the server will accept a successful SASL
+authentication in place of the server password.
+
+If your client doesn't support SASL, there are potential workarounds;
+you may be able to script your client to authenticate to NickServ
+automatically, with `/msg NickServ identify nickname password`.
+Ask in #darwin for support with this.
+
+3. What are the benefits of registering my nickname?
+
+The primary benefit of nickname registration is that the server can act
+as an "IRC bouncer" on your behalf. Specifically:
+
+  a. No one else will be able to use your nickname
+  b. If all your clients are configured to use SASL, they can all use the same
+     nickname (as though they were connected to the same ZNC instance)
+  c. Optionally, the server can keep you present on the server even if
+     you have no connected clients. To enable this, use the following command:
+     `/msg NickServ set always-on true`
+  d. You will be able to receive history playback (see below).
+
+You can also enable a vhost (i.e., a fake hostname that will be displayed
+in place of your cloaked IP-based hostname). You can take 'darwin.network' as
+your vhost without operator approval with `/msg HostServ take darwin.network`.
+For details on how to request a unique personal vhost, `/msg HostServ help`.
+
+4. How does server-side history work?
+
+darwin.network retains up to 14 days of chat history on the server side,
+stored in an on-disk database. All messages are purged once they
+reach the 14-day age limit. Furthermore, access to history is restricted
+so that users can only replay messages that they could have received
+normally when they were sent. Specifically:
+
+  a. Anonymous users cannot view messages sent more than 1 hour before
+     they connected to the server. This allows people to join and see
+     the context of the current discussion, but not to probe into past
+     conversations.
+  b. Logged-in users cannot view messages sent more than 1 hour before
+     their account was registered. This is equivalent to having had a
+     personal IRC client or bouncer connected since the time of registration.
+
+By default:
+
+  c. Messages sent to an unregistered channel are stored in-memory
+     ("ephemeral history"), but not in the database.
+  d. Messages sent to a registered channel are stored in the database.
+     As the owner of a registered channel, you can disable this with
+     `/msg ChanServ set history ephemeral` (or `set history off`).
+  e. Direct messages for logged-out clients are stored in-memory.
+  f. Direct messages for logged-in clients are stored in the database.
+     You can disable this with `/msg NickServ set dm-history ephemeral`
+     (or `set history off`).
+
+Unfortunately, client support for history playback is lagging behind our
+server-side support:
+
+  g. The most convenient way to access server-side history
+     is with our fully self-hosted <a href="https://irc.darwin.network/kiwi/">Kiwi IRC</a> instance, which can play back
+     history on request.
+  h. If your client supports ZNC's <a href="https://wiki.znc.in/Playback">playback</a> module, you can use it
+     to replay only the lines you missed. For example, in <a href="https://www.codeux.com/textual/">Textual</a>,
+     go to "Server properties", select "Vendor specific", uncheck "Do not
+     automatically join channels on connect", and check "Only play back messages
+     you missed". Other clients with support are listed on ZNC's wiki page.
+  i. You can manually request recent channel history by issuing the command:
+     /quote history #channel
+  k. If you are not using the multi-client feature, you can set your account
+     to auto-replay messages that were sent while you were logged out
+     (similar to the default behavior of ZNC). To enable this, send:
+     /msg NickServ set always-on true
+     /msg NickServ set autoreplay-missed true
+
+5. I'm trying to add a client certificate, but it doesn't work --- why not?
+
+Although Oragono supports client certificates, darwin.network does not,
+because we use an external TLS terminator that doesn't pass client certificate
+information through to the ircd. We recommend SASL PLAIN with a strong, unique
+password. For example, the output of the following command will work:
+
+python3 -c "import secrets; print(secrets.token_urlsafe(16))"
+</pre>
+</body>
+</html>
