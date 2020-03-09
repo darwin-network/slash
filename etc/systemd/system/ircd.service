@@ -1,6 +1,7 @@
 [Unit]
 Description=ircd
-After=network.target
+Requires=mysql.service
+After=network.target mysql.service
 
 [Service]
 Type=simple
