@@ -3,6 +3,7 @@
 set -eu
 
 export LE_SOURCEDIR=/etc/certificates
+
 /etc/bin/install-lecerts irc.darwin.network Debian-exim Debian-exim /etc/exim_certificates/tls
 
 # TODO is this necessary?

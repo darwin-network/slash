@@ -1,0 +1,4 @@
+#!/bin/bash
+
+systemctl reload nginx.service
+exit 0
