@@ -106,12 +106,7 @@ server-side support:
 
 5. I'm trying to add a client certificate, but it doesn't work --- why not?
 
-Although Oragono supports client certificates, darwin.network does not,
-because we use an external TLS terminator that doesn't pass client certificate
-information through to the ircd. We recommend SASL PLAIN with a strong, unique
-password. For example, the output of the following command will work:
-
-python3 -c "import secrets; print(secrets.token_urlsafe(16))"
+Try connecting to port 6698 instead of port 6697 (keep TLS enabled).
 </pre>
 </body>
 </html>
