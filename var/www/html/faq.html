@@ -104,9 +104,24 @@ server-side support:
      /msg NickServ set always-on true
      /msg NickServ set autoreplay-missed true
 
-5. I'm trying to add a client certificate, but it doesn't work --- why not?
+5. I'm trying to use a client certificate, but it doesn't work --- why not?
 
-Try connecting to port 6698 instead of port 6697 (keep TLS enabled).
+First, connect on port 6698 instead of port 6697 (keep TLS enabled).
+
+Then you can either:
+
+a. Register a new account by sending `*` as the password, e.g.,
+       /msg NickServ register * validEmailAddress@example.com
+   This account will then use your current client certificate as its only
+   authentication credential.
+b. If you already have a password-based account, compute its SHA-256
+   fingerprint, e.g., with `openssl`:
+       openssl x509 -noout -fingerprint -sha256 -inform pem -in client.crt
+   then add the fingerprint to your account with `/msg NickServ cert`:
+       /msg NickServ cert add 12:34:56:78:90:AB:CD:EF...
+
+Then, enable SASL EXTERNAL in your client so that you will be logged in
+automatically on each reconnection.
 </pre>
 </body>
 </html>
