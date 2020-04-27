@@ -36,11 +36,6 @@ clients:
 
 If your client is not listed, it may have its own documentation or help pages.
 
-Note that many clients only support a single password field. In this case, you
-should configure your SASL password as the password and omit the server
-password (`smellyoulater`) entirely; the server will accept a successful SASL
-authentication in place of the server password.
-
 If your client doesn't support SASL, there are potential workarounds;
 you may be able to script your client to authenticate to NickServ
 automatically, with `/msg NickServ identify nickname password`.
