@@ -1,6 +1,6 @@
 [Unit]
 Description=ircd
-Requires=mysql.service
+Wants=mysql.service
 After=network.target mysql.service
 
 [Service]
