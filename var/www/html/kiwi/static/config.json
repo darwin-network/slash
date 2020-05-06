@@ -1,7 +1,6 @@
 {
     "windowTitle": "irc.darwin.network",
     "startupScreen": "welcome",
-    "kiwiServer": "https://irc.darwin.network/webirc/kiwiirc/",
     "restricted": true,
     "theme": "dark",
     "themes": [
@@ -16,7 +15,11 @@
     ],
     "startupOptions" : {
         "greetingText": "irc.darwin.network",
-        "direct": false,
+        "direct": true,
+        "server": "irc.darwin.network",
+        "port": 443,
+        "tls": true,
+        "direct_path": "/webirc",
         "channel": "#darwin",
         "nick": "guest-n?"
     },

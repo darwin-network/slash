@@ -27,9 +27,9 @@ server {
 	index index.html;
 	autoindex off;
 
-	# webircgateway hardcodes the WS path to be /webirc/websocket
+	# proxy to native oragono websocket
 	location /webirc {
-		proxy_pass http://unix:/tmp/webircgateway.sock:/webirc;
+		proxy_pass http://unix:/tmp/oragono_websocket;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "Upgrade";
