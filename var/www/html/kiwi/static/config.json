@@ -15,11 +15,7 @@
     ],
     "startupOptions" : {
         "greetingText": "irc.darwin.network",
-        "direct": true,
-        "server": "irc.darwin.network",
-        "port": 443,
-        "tls": true,
-        "direct_path": "/webirc",
+        "websocket": "wss://irc.darwin.network/webirc",
         "channel": "#darwin",
         "nick": "guest-n?"
     },
@@ -33,6 +29,7 @@
         "share_typing": false,
         "show_emoticons": false,
         "show_link_previews": false,
+        "inline_link_auto_previews": false,
         "mute_sound": true
     }
 }
