@@ -101,7 +101,14 @@ server-side support:
      go to "Server properties", select "Vendor specific", uncheck "Do not
      automatically join channels on connect", and check "Only play back messages
      you missed". Other clients with support are listed on ZNC's wiki page.
-  i. You can manually request recent channel history by issuing the command:
+  i. You can set your client to always-on, then use per-device missed message
+     tracking. To do this, first enable always-on:
+     /msg NickServ set always-on true
+     then set your SASL username to include a device ID, e.g., if your account
+     name is 'alice', set it to 'alice@laptop' or 'alice@phone'. The server
+     will track which messages you received and replay missed messages on
+     each login.
+  j. You can manually request recent channel history by issuing the command:
      /quote history #channel
   k. If you are not using the multi-client feature, you can set your account
      to auto-replay messages that were sent while you were logged out
