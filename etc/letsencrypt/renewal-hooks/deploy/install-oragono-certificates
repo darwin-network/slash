@@ -4,7 +4,7 @@ set -eu
 
 export LE_SOURCEDIR=/etc/certificates
 
-/etc/bin/install-lecerts irc.darwin.network oragono nogroup /home/oragono
+/etc/bin/install-lecerts irc.darwin.network oragono oragono /home/oragono
 
 systemctl reload ircd.service
 

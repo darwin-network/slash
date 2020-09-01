@@ -10,7 +10,7 @@ fi
 BACKUP_FILE=backup-$(date -I).tar.gz
 ENCRYPTED_BACKUP_FILE=${BACKUP_FILE}.gpg
 
-tar -cvzf $BACKUP_FILE /etc /var/www /home/oragono/go/bin/oragono /home/oragono/ircd.* /home/oragono/motd.* /var/lib/tor/tor_hidden_service/
+tar -cvzf $BACKUP_FILE /etc /var/www /home/oragono/go/bin/oragono /home/oragono/ircd.* /home/oragono/motd.* /home/oragono/*.pem /var/lib/tor/tor_hidden_service/
 gpg --batch --symmetric --cipher-algo AES256 --passphrase-file /etc/backup_passphrase --no-use-agent --output $ENCRYPTED_BACKUP_FILE $BACKUP_FILE
 rm $BACKUP_FILE
 chown ${SUDO_USER}:${SUDO_USER} $ENCRYPTED_BACKUP_FILE
