@@ -1,6 +1,9 @@
 server {
 	listen 6697 ssl;
 	listen [::]:6697 ssl;
+	# 994 is the "official" port that nobody uses, as per RFC 7194
+	listen 994 ssl;
+	listen [::]:994 ssl;
 
 	ssl_certificate /etc/certificates/irc.darwin.network/fullchain.pem;
 	ssl_certificate_key /etc/certificates/irc.darwin.network/privkey.pem;
