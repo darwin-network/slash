@@ -9,11 +9,20 @@ server {
 	# stop directory 301 URLs from explicitly including port 8080
 	port_in_redirect off;
 
-	# webirc will not work over an onion address for multiple reasons:
-	# 1. webircgateway doesn't support "tor listeners" the way oragono does
-	# 2. CORS headaches (TBB appears to suppress the Origin: header)
-	location /kiwi/ {
-		return 302 https://irc.darwin.network/kiwi/;
+	# override kiwi config so that it connects to the websocket address
+	location /kiwi/static/config.json {
+		root /var/www/html;
+		rewrite ^/kiwi/static/config.json$ /kiwi_onion/static/config.json;
+	}
+
+	# proxy to native oragono websocket
+	location /webirc {
+		proxy_pass http://unix:/hidden_service_sockets/oragono_websocket;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "Upgrade";
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-Proto $scheme;
 	}
 
 	location / {
