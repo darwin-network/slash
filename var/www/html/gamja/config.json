@@ -1,0 +1,7 @@
+{
+        "server": {
+                "url": "wss://irc.darwin.network/webirc",
+                "autojoin": "#darwin",
+                "auth": "optional"
+        }
+}
